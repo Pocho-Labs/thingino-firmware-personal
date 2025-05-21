@@ -1,0 +1,122 @@
+name: Generate and Rename ZIPs on Thingino Firmware Release
+
+on:
+  repository_dispatch:
+    types: [thingino-release]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Thingino Firmware Release Tag (e.g., firmware-2025-05-20)'
+        required: false
+        default: ''
+
+jobs:
+  generate-zips:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pocho-labs/thingino-firmware-personal
+        uses: actions/checkout@v4
+        with:
+          repository: pocho-labs/thingino-firmware-personal
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+
+      - name: Set up environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make zip jq
+          git clone https://github.com/cocus/t31-test-tar-upgrader.git
+
+      - name: Clean up existing zips directory
+        run: |
+          if [ -d "zips" ]; then
+            git rm -r zips
+            git config user.name "GitHub Actions Bot"
+            git config user.email "actions@github.com"
+            git commit -m "Remove zips directory from repository"
+            git remote set-url origin https://x:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/pocho-labs/thingino-firmware-personal.git
+            git push
+          else
+            echo "No zips directory found to remove."
+          fi
+
+      - name: Determine release tag
+        id: release
+        run: |
+          if [ -n "${{ github.event.client_payload.tag_name }}" ]; then
+            echo "RELEASE_TAG=${{ github.event.client_payload.tag_name }}" >> $GITHUB_ENV
+          elif [ -n "${{ github.event.inputs.release_tag }}" ]; then
+            echo "RELEASE_TAG=${{ github.event.inputs.release_tag }}" >> $GITHUB_ENV
+          else
+            LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              https://api.github.com/repos/themactep/thingino-firmware/releases/latest | jq -r .tag_name)
+            if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
+              echo "Error: Could not fetch the latest release tag from themactep/thingino-firmware."
+              exit 1
+            fi
+            echo "RELEASE_TAG=$LATEST_TAG" >> $GITHUB_ENV
+          fi
+
+      - name: Check if release already exists
+        id: check_release
+        run: |
+          # Fetch the latest release tag from pocho-labs/thingino-firmware-personal
+          CURRENT_TAG=$(curl -s -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
+            https://api.github.com/repos/pocho-labs/thingino-firmware-personal/releases/latest | jq -r '.tag_name // ""')
+          echo "Current release tag in pocho-labs: $CURRENT_TAG"
+          echo "Thingino release tag: ${{ env.RELEASE_TAG }}"
+
+          # Compare the tags
+          if [ "$CURRENT_TAG" = "${{ env.RELEASE_TAG }}" ]; then
+            echo "Latest release in pocho-labs/thingino-firmware-personal (${CURRENT_TAG}) matches the latest thingino-firmware release (${{ env.RELEASE_TAG }}). Exiting workflow."
+            echo "SKIP_REMAINING_STEPS=true" >> $GITHUB_ENV
+          else
+            echo "Releases differ. Proceeding with workflow."
+            echo "SKIP_REMAINING_STEPS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Run make to generate ZIP files
+        if: env.SKIP_REMAINING_STEPS != 'true'
+        run: |
+          cd t31-test-tar-upgrader
+          make
+
+      - name: Rename and move ZIP files to temporary folder
+        if: env.SKIP_REMAINING_STEPS != 'true'
+        run: |
+          mkdir -p temp_zips
+          cd t31-test-tar-upgrader
+          mv personalcam2.zip ../temp_zips/personalcam2-${{ env.RELEASE_TAG }}.zip
+          mv personalpan.zip ../temp_zips/personalpan-${{ env.RELEASE_TAG }}.zip
+
+      - name: Fetch thingino-firmware release information
+        if: env.SKIP_REMAINING_STEPS != 'true'
+        id: fetch_release
+        run: |
+          RELEASE_INFO=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/themactep/thingino-firmware/releases/tags/${{ env.RELEASE_TAG }}" || echo "{}")
+          RELEASE_NAME=$(echo "$RELEASE_INFO" | jq -r '.name // "No release name"')
+          RELEASE_BODY=$(echo "$RELEASE_INFO" | jq -r '.body // "No release notes available"')
+          echo "THINGINO_RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
+          echo "THINGINO_RELEASE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$RELEASE_BODY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create Release
+        if: env.SKIP_REMAINING_STEPS != 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            temp_zips/personalcam2-${{ env.RELEASE_TAG }}.zip
+            temp_zips/personalpan-${{ env.RELEASE_TAG }}.zip
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: Release ${{ env.RELEASE_TAG }}
+          body: |
+            ZIP files generated from cocus/t31-test-tar-upgrader for thingino-firmware release ${{ env.RELEASE_TAG }}.
+
+            **Original thingino-firmware Release Notes**:
+            Release Name: ${{ env.THINGINO_RELEASE_NAME }}
+            ${{ env.THINGINO_RELEASE_BODY }}
+
+            See the original [thingino release](https://github.com/themactep/thingino-firmware/releases/tag/${{ env.RELEASE_TAG }})
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
