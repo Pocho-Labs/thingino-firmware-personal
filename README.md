@@ -14,7 +14,7 @@ La finalidad de este repo es eliminar la necesidad de ejecutar de forma manual e
 
 
 
-1. Visitá la [página de Releases](https://github.com/pocho-labs/thingino-upgrader-personal/releases) de este repositorio.
+1. Visitá la [página de Releases](https://github.com/pocho-labs/thingino-firmware-personal/releases) de este repositorio.
 2. Descargá el archivo ZIP más reciente para tu cámara:
    - `personalcam2-<etiqueta-de-versión>.zip` para Personal Cam2.
    - `personalpan-<etiqueta-de-versión>.zip` para Personal Cam Pan.
@@ -58,7 +58,7 @@ This eliminates the need to manually run the `make` command on a Linux system, m
 
 **Note 2**: Sometimes the process might get stuck, but it has worked for me about 90% of the time. If the upgrade fails, you may need to disassemble the camera and follow the [Thingino Cloner](https://thingino.com/cloner) tutorial for recovery.
 
-1. Visit the [Releases page](https://github.com/pocho-labs/thingino-upgrader-personal/releases) of this repository.
+1. Visit the [Releases page](https://github.com/Pocho-Labs/thingino-firmware-personal/releases) of this repository.
 2. Download the latest ZIP file for your camera:
    - `personalcam2-<release-tag>.zip` for Personal Cam2.
    - `personalpan-<release-tag>.zip` for Personal Cam Pan.
