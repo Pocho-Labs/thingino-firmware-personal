@@ -31,6 +31,7 @@ La finalidad de este repo es eliminar la necesidad de ejecutar de forma manual e
    - **Azul + amarillo fijo, SIN IR**: Borrando mtd1.
 6. Una vez que los LEDs se apagan (o después de un ciclo de encendido manual), el sistema se reinicia con el nuevo u-boot, que va a flashear `autoupdate-full.bin`. Este paso no tiene indicación de LEDs, así que tené paciencia. Si pasa más de 5 minutos, hacé un ciclo de encendido (y cruzá los dedos).
 7. Parpadeos rápidos del LED azul indican que el proceso terminó y la cámara está iniciando Thingino.
+8. Si vas a flashear varias cámaras, eliminá todos los archivos de la sd y copiale de nuevo los archivos de adentro del zip, en el proceso de flasheado se backupean varias particiones y las guarda como archivos .bin, así que en el próximo flasheo va a intentar flashearlos y va a fallar el proceso **volviendo un ladrillo la segunda cámara**.
 
 
 ### ¿Cómo funciona?
@@ -74,6 +75,7 @@ This eliminates the need to manually run the `make` command on a Linux system, m
    - **Blue + Yellow solid, NO IR**: Erasing mtd1.
 6. Once the LEDs go dark (or after a manual power cycle), the system reboots into the new u-boot, which will flash `autoupdate-full.bin`. This step has no LED indication, so be patient. If it takes more than 5 minutes, power cycle the camera.
 7. Fast Blue LED blinks indicate the process is complete, and the camera is booting Thingino!
+8. If you are going to flash multiple cameras, delete all files from the SD card and copy the files inside the zip to the SD card again. During the flashing process, several partitions are backed up and saved as .bin files. So, the next time you flash, it will try to flash them and the process will fail, **bricking the second camera**.
 
 
 ### How it works
