@@ -19,8 +19,9 @@ La finalidad de este repo es eliminar la necesidad de ejecutar de forma manual e
    - `personalcam2-<etiqueta-de-versión>.zip` para Personal Cam2.
    - `personalpan-<etiqueta-de-versión>.zip` para Personal Cam Pan.
 3. Descomprimí el archivo descargado en una tarjeta SD formateada en FAT32. **¡FAT16 o exFAT no van a funcionar!**
-4. Insertá la tarjeta SD en la cámara, encendela y esperá.
-5. Los LEDs de la cámara (amarillo, azul e IR) te van a indicar el estado de la actualización:
+4. Antes de insertar la tarjeta _SD_ en la cámara, verificá que el _HASH_ de los archivos copiados coincidan usando `md5sum *` y también verificá el estado de la _SD_ usando `fdisk /dev/sda1`, en caso de estar corrupta volver a formatear la _SD_ y repetí paso `3`.
+5. Insertá la tarjeta SD en la cámara, encendela y esperá.
+6. Los LEDs de la cámara (amarillo, azul e IR) te van a indicar el estado de la actualización:
    - **Parpadeo azul, SIN IR, SIN amarillo**: Volcando respaldo a la SD.
    - **Parpadeo amarillo, IR ENCENDIDO, SIN azul**: No se encontró el archivo de actualización.
    - **Parpadeo azul, IR ENCENDIDO, SIN amarillo**: El tamaño esperado de la partición de arranque no coincide.
@@ -29,10 +30,30 @@ La finalidad de este repo es eliminar la necesidad de ejecutar de forma manual e
    - **Azul fijo, SIN IR, SIN amarillo**: Flasheando u-boot.
    - **Amarillo fijo, SIN IR, SIN azul**: Generando respaldo completo de todas las particiones.
    - **Azul + amarillo fijo, SIN IR**: Borrando mtd1.
-6. Una vez que los LEDs se apagan (o después de un ciclo de encendido manual), el sistema se reinicia con el nuevo u-boot, que va a flashear `autoupdate-full.bin`. Este paso no tiene indicación de LEDs, así que tené paciencia. Si pasa más de 5 minutos, hacé un ciclo de encendido (y cruzá los dedos).
-7. Parpadeos rápidos del LED azul indican que el proceso terminó y la cámara está iniciando Thingino.
-8. Si vas a flashear varias cámaras, eliminá todos los archivos de la sd y copiale de nuevo los archivos de adentro del zip, en el proceso de flasheado se backupean varias particiones y las guarda como archivos .bin, así que en el próximo flasheo va a intentar flashearlos y va a fallar el proceso **volviendo un ladrillo la segunda cámara**.
+7. Una vez que los LEDs se apagan (o después de un ciclo de encendido manual), el sistema se reinicia con el nuevo u-boot, que va a flashear `autoupdate-full.bin`. Este paso no tiene indicación de LEDs, así que tené paciencia. Si pasa más de 5 minutos, hacé un ciclo de encendido (y cruzá los dedos).
+8. Parpadeos rápidos del LED azul indican que el proceso terminó y la cámara está iniciando Thingino.
+9. Si vas a flashear varias cámaras, eliminá todos los archivos de la sd y copiale de nuevo los archivos de adentro del zip, en el proceso de flasheado se backupean varias particiones y las guarda como archivos .bin, así que en el próximo flasheo va a intentar flashearlos y va a fallar el proceso **volviendo un ladrillo la segunda cámara**.
 
+### Diagnóstico
+
+Ya sea que termine exitosamente o convirtiendo tu nueva cámara en un ladrillo, vale la pena revisar los archivos `*.log` que quedan en la tarjeta _SD_:
+
+```
+info_df.log
+info_dmesg.log
+info_lsmod.log
+info_mount.log
+info_mtd.log
+info_ps.log
+```
+
+El archivo `info_dmesg.log` puede proveer información valiosa:
+
+```
+tail -1 info_dmesg.log
+
+[    3.485549] FAT-fs (mmcblk0p1): Volume was not properly unmounted. Some data may be corrupt. Please run fsck
+```
 
 ### ¿Cómo funciona?
 Este repositorio usa [GitHub Actions](https://github.com/features/actions) para monitorear nuevas versiones en [themactep/thingino-firmware](https://github.com/themactep/thingino-firmware). Cuando se detecta una nueva versión, se ejecuta un flujo de trabajo que hace lo siguiente:
@@ -63,8 +84,9 @@ This eliminates the need to manually run the `make` command on a Linux system, m
    - `personalcam2-<release-tag>.zip` for Personal Cam2.
    - `personalpan-<release-tag>.zip` for Personal Cam Pan.
 3. Unzip the downloaded file to a FAT32-formatted SD card. **FAT16 or exFAT will not work!**
-4. Insert the SD card into the camera, power it on, and wait.
-5. The camera’s LEDs (Yellow, Blue, and IR) will indicate the update status:
+4. Before inserting the SD card into the camera, verify that the hash of the copied files matches using `md5sum *` and check the SD card’s status using `fdisk /dev/sda1`. If the SD card is corrupted, reformat it and repeat step 3.
+5. Insert the SD card into the camera, power it on, and wait.
+6. The camera’s LEDs (Yellow, Blue, and IR) will indicate the update status:
    - **Blue blink, NO IR, NO Yellow**: Dumping backup to SD.
    - **Yellow blink, IR ON, NO Blue**: Update file not found.
    - **Blue blink, IR ON, NO Yellow**: Expected boot partition size doesn’t match.
@@ -73,10 +95,30 @@ This eliminates the need to manually run the `make` command on a Linux system, m
    - **Blue solid, NO IR, NO Yellow**: Flashing u-boot.
    - **Yellow solid, NO IR, NO Blue**: Generating full backup of all partitions.
    - **Blue + Yellow solid, NO IR**: Erasing mtd1.
-6. Once the LEDs go dark (or after a manual power cycle), the system reboots into the new u-boot, which will flash `autoupdate-full.bin`. This step has no LED indication, so be patient. If it takes more than 5 minutes, power cycle the camera.
-7. Fast Blue LED blinks indicate the process is complete, and the camera is booting Thingino!
-8. If you are going to flash multiple cameras, delete all files from the SD card and copy the files inside the zip to the SD card again. During the flashing process, several partitions are backed up and saved as .bin files. So, the next time you flash, it will try to flash them and the process will fail, **bricking the second camera**.
+7. Once the LEDs go dark (or after a manual power cycle), the system reboots into the new u-boot, which will flash `autoupdate-full.bin`. This step has no LED indication, so be patient. If it takes more than 5 minutes, power cycle the camera.
+8. Fast Blue LED blinks indicate the process is complete, and the camera is booting Thingino!
+9. If you are going to flash multiple cameras, delete all files from the SD card and copy the files inside the zip to the SD card again. During the flashing process, several partitions are backed up and saved as .bin files. So, the next time you flash, it will try to flash them and the process will fail, **bricking the second camera**.
 
+### Diagnostics
+
+Whether the process completes successfully or turns your camera into a brick, it’s worth checking the `*.log` files left on the SD card:
+
+```
+info_df.log
+info_dmesg.log
+info_lsmod.log
+info_mount.log
+info_mtd.log
+info_ps.log
+```
+
+The `info_dmesg.log` file can provide valuable information:
+
+```
+tail -1 info_dmesg.log
+
+[    3.485549] FAT-fs (mmcblk0p1): Volume was not properly unmounted. Some data may be corrupt. Please run fsck
+```
 
 ### How it works
 This repository uses [GitHub Actions](https://github.com/features/actions) to monitor new releases in [themactep/thingino-firmware](https://github.com/themactep/thingino-firmware). When a new release is detected (via an IFTTT webhook), a workflow runs the following steps:
