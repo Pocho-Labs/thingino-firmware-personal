@@ -8,6 +8,7 @@ La finalidad de este repo es eliminar la necesidad de ejecutar de forma manual e
 
 ## Video explicación
 Para más info, les comparto el video de mi canal de YouTube donde muestro el proceso y cuento las ventajas de Thingino!
+
 [![YouTube Video](https://img.youtube.com/vi/do7VYb76DFQ/hqdefault.jpg)](https://youtu.be/do7VYb76DFQ)
 
 ### ¿Cómo se usa?
