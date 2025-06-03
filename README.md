@@ -6,6 +6,10 @@ Cada vez que se publica una nueva versión en [themactep/thingino-firmware](http
 
 La finalidad de este repo es eliminar la necesidad de ejecutar de forma manual en comando `make` en un sistema Linux, haciendo que el proceso de actualización sea más accesible para quienes no tengan el conocimiento de como hacerlo.
 
+## Video explicación
+Para más info, les comparto el video de mi canal de YouTube donde muestro el proceso y cuento las ventajas de Thingino!
+[![YouTube Video](https://img.youtube.com/vi/do7VYb76DFQ/hqdefault.jpg)](https://youtu.be/do7VYb76DFQ)
+
 ### ¿Cómo se usa?
 **Nota**: Solo es compatible con las cámaras **Personal Cam Pan** y **Personal Cam2** (aunque en teoría podría funcionar con otros modelos - y no me hago responsable).
 
