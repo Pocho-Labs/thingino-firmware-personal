@@ -10,9 +10,6 @@ on:
         required: false
         default: ''
 
-permissions:
-  contents: write
-
 jobs:
   generate-zips:
     runs-on: ubuntu-latest
@@ -121,3 +118,5 @@ jobs:
             ${{ env.THINGINO_RELEASE_BODY }}
 
             See the original [thingino release](https://github.com/themactep/thingino-firmware/releases/tag/${{ env.RELEASE_TAG }})
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
