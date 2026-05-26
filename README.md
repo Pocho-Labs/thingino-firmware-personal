@@ -35,7 +35,7 @@ Para más info, les comparto el video de mi canal de YouTube donde muestro el pr
    - **Azul fijo, SIN IR, SIN amarillo**: Flasheando u-boot.
    - **Amarillo fijo, SIN IR, SIN azul**: Generando respaldo completo de todas las particiones.
    - **Azul + amarillo fijo, SIN IR**: Borrando mtd1.
-7. Una vez que los LEDs se apagan (o después de un ciclo de encendido manual), el sistema se reinicia con el nuevo u-boot, que va a flashear `autoupdate-full.bin`. Este paso no tiene indicación de LEDs, así que tené paciencia. Si pasa más de 5 minutos, hacé un ciclo de encendido (y cruzá los dedos).
+7. Una vez que los LEDs se apagan (o después de un ciclo de encendido manual), el sistema se reinicia con el nuevo u-boot, que va a flashear `autoupdate-full.bin`. Este paso no tiene indicación de LEDs, así que tené paciencia. Si pasa más de 5 minutos, hacé un ciclo de encendido (y cruzá los dedos). Nota: Retira la SD antes de volver a conectar la camara a la alimentación .
 8. Parpadeos rápidos del LED azul indican que el proceso terminó y la cámara está iniciando Thingino.
 9. Si vas a flashear varias cámaras, eliminá todos los archivos de la sd y copiale de nuevo los archivos de adentro del zip, en el proceso de flasheado se backupean varias particiones y las guarda como archivos .bin, así que en el próximo flasheo va a intentar flashearlos y va a fallar el proceso **volviendo un ladrillo la segunda cámara**.
 
@@ -100,7 +100,7 @@ This eliminates the need to manually run the `make` command on a Linux system, m
    - **Blue solid, NO IR, NO Yellow**: Flashing u-boot.
    - **Yellow solid, NO IR, NO Blue**: Generating full backup of all partitions.
    - **Blue + Yellow solid, NO IR**: Erasing mtd1.
-7. Once the LEDs go dark (or after a manual power cycle), the system reboots into the new u-boot, which will flash `autoupdate-full.bin`. This step has no LED indication, so be patient. If it takes more than 5 minutes, power cycle the camera.
+7. Once the LEDs go dark (or after a manual power cycle), the system reboots into the new u-boot, which will flash `autoupdate-full.bin`. This step has no LED indication, so be patient. If it takes more than 5 minutes, power cycle the camera. Note: Remove the SD card before reconnecting the camera to the power.
 8. Fast Blue LED blinks indicate the process is complete, and the camera is booting Thingino!
 9. If you are going to flash multiple cameras, delete all files from the SD card and copy the files inside the zip to the SD card again. During the flashing process, several partitions are backed up and saved as .bin files. So, the next time you flash, it will try to flash them and the process will fail, **bricking the second camera**.
 
