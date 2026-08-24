@@ -85,7 +85,7 @@ jobs:
 
       - name: Create Release
         if: env.SKIP != 'true'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             temp_zips/personalcam2-${{ env.RELEASE_TAG }}.zip
