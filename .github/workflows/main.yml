@@ -36,7 +36,7 @@ jobs:
       - name: Check if release already exists
         run: |
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
+            -H "Authorization: Bearer ${{ github.token }}" \
             https://api.github.com/repos/pocho-labs/thingino-firmware-personal/releases/tags/${{ env.RELEASE_TAG }})
           echo "Tag lookup HTTP status: $HTTP_STATUS"
           if [ "$HTTP_STATUS" = "200" ]; then
@@ -49,9 +49,7 @@ jobs:
 
       - name: Checkout repository
         if: env.SKIP != 'true'
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        uses: actions/checkout@v6
 
       - name: Set up environment
         if: env.SKIP != 'true'
@@ -103,4 +101,4 @@ jobs:
 
             See the original [thingino release](https://github.com/themactep/thingino-firmware/releases/tag/${{ env.RELEASE_TAG }})
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
